@@ -1,6 +1,8 @@
 # See: https://python-escpos.readthedocs.io/en/latest/user/usage.html#the-printer-section
+# TL;DR: put this in ~/.config/python-escpos/config.yaml
 
 printer:
-    type: Network
-    host: 127.0.0.1
-    port: 9100
+    type: Dummy
+    #type: Network
+    #host: 127.0.0.1
+    #port: 9100

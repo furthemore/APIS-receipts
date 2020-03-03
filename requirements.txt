@@ -5,7 +5,7 @@ paho-mqtt==1.5.0
 Pillow==7.0.0
 pkg-resources==0.0.0
 pyserial==3.4
-python-escpos==2.2.0
+python-escpos==3.0a6
 pyusb==1.0.2
 PyYAML==5.3
 qrcode==6.1

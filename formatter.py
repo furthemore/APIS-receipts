@@ -3,8 +3,27 @@ import textwrap
 
 class ReceiptFormatter(object):
     def __init__(self, width=48):
+        self.lines = []
         self.width = 48
         self.margin = 2
+
+    def print(self):
+        return "\n".join(self.lines)
+
+    def pop(self):
+        formatted = self.print()
+        self.clear()
+        return formatted
+
+    def clear(self):
+        self.lines = []
+
+    def ln(self):
+        self.lines.append("")
+        return ""
+
+    def append(self, text):
+        self.lines.append(text)
 
     def format_line_item(self, left, right):
         if len(left) + len(right) + self.margin > self.width:
@@ -13,17 +32,23 @@ class ReceiptFormatter(object):
             left = left[:left_max_len]
 
         space_len = self.width - len(left) - len(right) - self.margin
-        return f"{left}{' '*space_len}  {right}"
+        line = f"{left}{' '*space_len}  {right}"
+        self.lines.append(line)
+        return line
 
     def center_text(self, text):
         space_left = int((self.width - len(text)) / 2)
-        return f"{' '*space_left}{text}"
+        line = f"{' '*space_left}{text}"
+        self.lines.append(line)
+        return line
 
     def right_text(self, text):
         return self.format_line_item("", text)
 
     def wrap(self, text):
-        return textwrap.fill(text, width=self.width)
+        line = textwrap.fill(text, width=self.width)
+        self.lines.append(line)
+        return line
 
     def wrap_center(self, text):
         lines = textwrap.wrap(textwrap.dedent(text), width=self.width)
@@ -35,7 +60,9 @@ class ReceiptFormatter(object):
             width = self.width
         if center:
             return self.center_text(character * width)
-        return character * width
+        line = character * width
+        self.lines.append(line)
+        return line
 
 
 if __name__ == "__main__":
@@ -47,9 +74,9 @@ Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deseru
 """
     builder = ReceiptFormatter()
 
-    print()
-    print(builder.center_text("FurTheMore 2020"))
-    print()
+    builder.ln()
+    builder.center_text("FurTheMore 2020")
+    builder.ln()
 
     line_items = [
         ["Regular Badge", "$490.00"],
@@ -59,27 +86,29 @@ Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deseru
     ]
 
     for line in line_items:
-        print(builder.format_line_item(line[0], line[1]))
+        builder.format_line_item(line[0], line[1])
 
-    print()
+    builder.ln()
 
-    print(builder.format_line_item("Donation to FurTheMore 2020", "$10.00"))
-    print(builder.format_line_item("Donation to ALS Society", "$10.00"))
+    builder.format_line_item("Donation to FurTheMore 2020", "$10.00")
+    builder.format_line_item("Donation to ALS Society", "$10.00")
 
-    print()
+    builder.ln()
 
-    print(builder.right_text("Total Due:   $580.01"))
-    print()
-    print(builder.hr())
-    print()
+    builder.right_text("Total Due:   $580.01")
+    builder.ln()
+    builder.hr()
+    builder.ln()
 
-    print(builder.format_line_item("VISA CREDIT **** 4425", "$580.01"))
-    print("Ref: U4REQT | AID: A0000000031010")
-    print("Auth: 025993")
-    print("Completed: 2020-02-25T07:26:36.951Z")
-    print()
+    builder.format_line_item("VISA CREDIT **** 4425", "$580.01")
+    builder.append("Ref: U4REQT | AID: A0000000031010")
+    builder.append("Auth: 025993")
+    builder.append("Completed: 2020-02-25T07:26:36.951Z")
+    builder.ln()
 
-    print(builder.hr())
-    print()
+    builder.hr()
+    builder.ln()
 
-    print(builder.wrap_center(sample_paragraph))
+    builder.wrap_center(sample_paragraph)
+
+    print(builder.pop())

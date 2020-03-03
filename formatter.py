@@ -1,5 +1,6 @@
 import textwrap
 
+
 class ReceiptFormatter(object):
     def __init__(self, width=48):
         self.width = 48
@@ -18,12 +19,15 @@ class ReceiptFormatter(object):
         space_left = int((self.width - len(text)) / 2)
         return f"{' '*space_left}{text}"
 
+    def right_text(self, text):
+        return self.format_line_item("", text)
+
     def wrap(self, text):
         return textwrap.fill(text, width=self.width)
 
     def wrap_center(self, text):
         lines = textwrap.wrap(textwrap.dedent(text), width=self.width)
-        centered_lines = [ self.center_text(line) for line in lines ]
+        centered_lines = [self.center_text(line) for line in lines]
         return "\n".join(centered_lines)
 
     def hr(self, width=None, character="—", center=True):
@@ -36,9 +40,9 @@ class ReceiptFormatter(object):
 
 if __name__ == "__main__":
     sample_paragraph = """
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore 
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
 magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 
+consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
 Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 """
     builder = ReceiptFormatter()
@@ -64,7 +68,7 @@ Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deseru
 
     print()
 
-    print(builder.format_line_item("", "Total Due:   $580.01"))
+    print(builder.right_text("Total Due:   $580.01"))
     print()
     print(builder.hr())
     print()

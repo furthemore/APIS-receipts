@@ -1,0 +1,6 @@
+# See: https://python-escpos.readthedocs.io/en/latest/user/usage.html#the-printer-section
+
+printer:
+    type: Network
+    host: 127.0.0.1
+    port: 9100

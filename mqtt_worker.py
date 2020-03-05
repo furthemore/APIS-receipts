@@ -6,6 +6,7 @@ import paho.mqtt.client as mqtt
 from escpos.config import Config
 
 import settings
+import printing
 
 logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(name)s - %(message)s", level=logging.DEBUG,
@@ -53,6 +54,34 @@ def on_message(client, userdata, msg):
 
     if msg.topic == get_topic("print_credit"):
         print_receipt(receipt_printer, payload, settings.BOTTOM_TEXT_CREDIT)
+
+    # preview badge command chan
+    if msg.topic == get_topic("preview"):
+        badge_printer = printing.Main(local=True)
+
+        if settings.THEME == "":
+            settings.THEME == "apis"
+        try:
+            badge_printer.nametags(payload.get("badge"), theme=settings.THEME)
+            badge_printer.preview()
+        except Exception as e:
+            logger.error(e)
+            logger.error(f"Error on preview")
+            logger.error(msg.payload)
+
+    # print badge command chan
+    if msg.topic == get_topic("print"):
+        badge_printer = printing.Main(local=True)
+
+        if settings.THEME == "":
+            settings.THEME == "apis"
+        try:
+            badge_printer.nametags(payload.get("badges"), theme=settings.THEME)
+            badge_printer.printout()
+        except Exception as e:
+            logger.error(e)
+            logger.error(f"Error on print")
+            logger.error(msg.payload)
 
     receipt_printer.close()
 

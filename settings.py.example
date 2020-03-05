@@ -3,7 +3,6 @@ CASH_DRAWER_PIN = ""
 BOTTOM_TEXT_CASH = ""
 BOTTOM_TEXT_CREDIT = ""
 MQTT_TOPIC = ""
-BADGE_MQTT_TOPIC = ""
 STATION_NAME = ""
 MQTT_LOGIN = {
     "username": "",

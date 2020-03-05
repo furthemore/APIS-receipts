@@ -1,16 +1,38 @@
 THEME = "apis"
-CASH_DRAWER_PIN = ""
-BOTTOM_TEXT_CASH = ""
-BOTTOM_TEXT_CREDIT = ""
-MQTT_TOPIC = ""
-BADGE_MQTT_TOPIC = ""
-STATION_NAME = ""
-MQTT_LOGIN = {
-    "username": "",
-    "password": ""
-}
+
+# See pydoc paho.mqtt.client.connect for full list of arguments
 MQTT_BROKER = {
-    "host": "",
+    "host": "localhost",
     "port": 1883,
-    "keepalive": 60
+    "keepalive": 60,
 }
+
+# Authentication is optional
+#MQTT_LOGIN = {
+#    "username": "printing",
+#    "password": "secret",
+#}
+
+MQTT_TOPIC = "apis/receipts"
+
+# Should match the terminal name in "Firebase" table
+STATION_NAME = "default"
+
+# or 5
+CASH_DRAWER_PIN = 2
+
+BOTTOM_TEXT_CASH = """
+Mid-Atlantic Anthropomorphic Association, Inc. is a 501(c)3 charitable
+organization ID #82-1071057.  Donations may be tax-deductible. Consult your tax
+advisor for guidance.  Membership badges are non-refundable.  Please contact
+registration@furthemore.org or see staff for assistance.
+"""
+
+BOTTOM_TEXT_CREDIT = BOTTOM_TEXT_CASH + """
+Chargebacks (denying a charge) that are made for the sole purpose of avoiding
+payment, that are made without sufficient cause, or that are made without first
+attempting to resolve the dispute with MidAnthro may result in permanent
+revocation of membership privileges and possible legal action.
+"""
+
+# Printer settings are defined in escpos-config.yaml

@@ -5,8 +5,8 @@ from formatter import ReceiptFormatter
 import paho.mqtt.client as mqtt
 from escpos.config import Config
 
-import settings
 import printing
+import settings
 
 logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(name)s - %(message)s", level=logging.DEBUG,
@@ -144,8 +144,8 @@ def print_receipt(receipt_printer, payload, bottom_text):
         if org:
             builder.format_line_item(f"Donation to {org['name']}", org["price"])
 
-        charity = donations.get("charity")
-        if charity:
+        charities = donations.get("charity", [])
+        for charity in charities:
             builder.format_line_item(f"Donation to {charity['name']}", charity["price"])
 
     builder.ln()

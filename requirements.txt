@@ -6,7 +6,7 @@ Pillow==8.3.2
 pyserial==3.4
 python-escpos==3.0a6
 pyusb==1.0.2
-PyYAML==5.3
+PyYAML==5.4
 qrcode==6.1
 six==1.14.0
 zipp==3.0.0

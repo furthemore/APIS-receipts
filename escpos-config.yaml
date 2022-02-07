@@ -2,7 +2,10 @@
 # TL;DR: put this in ~/.config/python-escpos/config.yaml
 
 printer:
-    type: Dummy
+    #type: Dummy
+    type: Usb
+    idVendor: 0x04b8
+    idProduct: 0x0202
     #type: Network
     #host: 127.0.0.1
     #port: 9100

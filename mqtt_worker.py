@@ -66,7 +66,7 @@ def on_message(client, userdata, msg):
             badge_printer.preview()
         except Exception as e:
             logger.error(e)
-            logger.error(f"Error on preview")
+            logger.error("Error on preview")
             logger.error(msg.payload)
 
     # print badge command chan
@@ -80,7 +80,7 @@ def on_message(client, userdata, msg):
             badge_printer.printout()
         except Exception as e:
             logger.error(e)
-            logger.error(f"Error on print")
+            logger.error("Error on print")
             logger.error(msg.payload)
 
     receipt_printer.close()
@@ -202,6 +202,11 @@ if __name__ == "__main__":
         client.username_pw_set(**settings.MQTT_LOGIN)
     except AttributeError:
         logger.debug("No username/password specified - using anonymous access")
+
+    if settings.get("MQTT_TLS_ENABLED", False):
+        tls_context = settings.get("MQTT_TLS_CONTEXT")
+        logger.debug(f"Enabling TLS with context: {tls_context}")
+        client.tls_set_context(tls_context)
 
     logger.info("Connecting...")
     client.connect(**settings.MQTT_BROKER)

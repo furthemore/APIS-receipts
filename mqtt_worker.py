@@ -8,20 +8,31 @@ from escpos.config import Config
 import printing
 import settings
 
-logging.basicConfig(
-    format="%(asctime)s - %(levelname)s - %(name)s - %(message)s", level=logging.DEBUG,
-)
-
-logger = logging.getLogger("apis-receipts")
+# create logger
+logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
-logging.debug(
-    "FIXME: Importing the escpos library clobbers logger here for some reason"
+
+# create console handler and set level to debug
+ch = logging.StreamHandler()
+ch.setLevel(logging.DEBUG)
+
+# create formatter
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+# add formatter to ch
+ch.setFormatter(formatter)
+
+# add ch to logger
+logger.addHandler(ch)
+
+logger.debug(
+    "FIXME: Importing the escpos library clobbers logging here for some reason"
 )
 
 
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client, userdata, flags, rc):
-    logger.info(f"Connected with result code {rc}")
+    logging.info(f"Connected with result code {rc}")
 
     base_topic = get_base_topic()
     # Subscribing in on_connect() means that if we lose the connection and
@@ -31,22 +42,22 @@ def on_connect(client, userdata, flags, rc):
 
 # The callback for when a PUBLISH message is received from the server.
 def on_message(client, userdata, msg):
-    logger.debug("Got message:")
-    logger.debug(msg.topic + " " + str(msg.payload))
+    logging.debug("Got message:")
+    logging.debug(msg.topic + " " + str(msg.payload))
 
     receipt_printer = get_printer()
 
     if msg.topic == get_topic("cash_drawer"):
-        logger.info("Opening cashdrawer...")
+        logging.info("Opening cashdrawer...")
         receipt_printer.cashdraw(settings.CASH_DRAWER_PIN)
 
     # Commands past here expect a JSON payload:
     try:
         payload = json.loads(msg.payload)
     except json.decoder.JSONDecodeError as e:
-        logger.error(e)
-        logger.error("Unable to decode message payload from server:")
-        logger.error(msg.payload)
+        logging.error(e)
+        logging.error("Unable to decode message payload from server:")
+        logging.error(msg.payload)
         return
 
     if msg.topic == get_topic("print_cash"):
@@ -65,9 +76,9 @@ def on_message(client, userdata, msg):
             badge_printer.nametags(payload.get("badge"), theme=settings.THEME)
             badge_printer.preview()
         except Exception as e:
-            logger.error(e)
-            logger.error("Error on preview")
-            logger.error(msg.payload)
+            logging.error(e)
+            logging.error("Error on preview")
+            logging.error(msg.payload)
 
     # print badge command chan
     if msg.topic == get_topic("print"):
@@ -79,9 +90,9 @@ def on_message(client, userdata, msg):
             badge_printer.nametags(payload.get("badges"), theme=settings.THEME)
             badge_printer.printout()
         except Exception as e:
-            logger.error(e)
-            logger.error("Error on print")
-            logger.error(msg.payload)
+            logging.error(e)
+            logging.error("Error on print")
+            logging.error(msg.payload)
 
     receipt_printer.close()
 
@@ -144,8 +155,9 @@ def print_receipt(receipt_printer, payload, bottom_text):
         if org:
             builder.format_line_item(f"Donation to {org['name']}", org["price"])
 
-        charities = donations.get("charity", [])
-        for charity in charities:
+        charity = donations.get("charity")
+        logger.debug(f"charity = {charity}")
+        if charity:
             builder.format_line_item(f"Donation to {charity['name']}", charity["price"])
 
     builder.ln()
@@ -201,14 +213,14 @@ if __name__ == "__main__":
     try:
         client.username_pw_set(**settings.MQTT_LOGIN)
     except AttributeError:
-        logger.debug("No username/password specified - using anonymous access")
+        logging.debug("No username/password specified - using anonymous access")
 
-    if settings.get("MQTT_TLS_ENABLED", False):
-        tls_context = settings.get("MQTT_TLS_CONTEXT")
-        logger.debug(f"Enabling TLS with context: {tls_context}")
+    if settings.MQTT_TLS_ENABLED:
+        tls_context = settings.MQTT_TLS_CONTEXT
+        logging.debug(f"Enabling TLS with context: {tls_context}")
         client.tls_set_context(tls_context)
 
-    logger.info("Connecting...")
+    logging.info("Connecting...")
     client.connect(**settings.MQTT_BROKER)
 
     # Blocking call that processes network traffic, dispatches callbacks and

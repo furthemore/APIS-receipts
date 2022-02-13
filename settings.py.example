@@ -8,6 +8,9 @@ MQTT_BROKER = {
     "keepalive": 60,
 }
 
+MQTT_TLS_ENABLED = True
+MQTT_TLS_CONTEXT = None
+
 # Authentication is optional
 #MQTT_LOGIN = {
 #    "username": "printing",

@@ -2,10 +2,11 @@ import textwrap
 
 
 class ReceiptFormatter(object):
-    def __init__(self, width=48):
+    def __init__(self, width=48, margin=2, left_margin=2):
         self.lines = []
-        self.width = 48
-        self.margin = 2
+        self.width = width
+        self.margin = margin
+        self.left_margin = left_margin
 
     def print(self):
         return "\n".join(self.lines)
@@ -23,7 +24,7 @@ class ReceiptFormatter(object):
         return ""
 
     def append(self, text):
-        self.lines.append(text)
+        self.lines.append(f"{' '*self.left_margin}{text}")
 
     def format_line_item(self, left, right):
         if len(left) + len(right) + self.margin > self.width:
@@ -32,12 +33,12 @@ class ReceiptFormatter(object):
             left = left[:left_max_len]
 
         space_len = self.width - len(left) - len(right) - self.margin
-        line = f"{left}{' '*space_len}  {right}"
+        line = f"{' '*self.left_margin}{left}{' '*space_len}  {right}"
         self.lines.append(line)
         return line
 
     def center_text(self, text):
-        space_left = int((self.width - len(text)) / 2)
+        space_left = self.left_margin + int((self.width - len(text)) / 2)
         line = f"{' '*space_left}{text}"
         self.lines.append(line)
         return line
@@ -47,7 +48,7 @@ class ReceiptFormatter(object):
 
     def wrap(self, text):
         line = textwrap.fill(text, width=self.width)
-        self.lines.append(line)
+        self.lines.append(f"{' '*self.left_margin}{line}")
         return line
 
     def wrap_center(self, text):

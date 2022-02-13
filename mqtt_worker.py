@@ -106,7 +106,7 @@ def get_base_topic():
     return f"{settings.MQTT_TOPIC}/{settings.STATION_NAME}"
 
 
-def print_receipt(receipt_printer, payload, bottom_text):
+def print_receipt(receipt_printer, payload, bottom_text, cashdraw=True):
     """
     Example payload:
         {
@@ -132,13 +132,14 @@ def print_receipt(receipt_printer, payload, bottom_text):
         }
     """
 
-    receipt_printer.cashdraw(settings.CASH_DRAWER_PIN)
+    if cashdraw:
+        receipt_printer.cashdraw(settings.CASH_DRAWER_PIN)
 
     receipt_printer.image("logo.png")
 
     event = payload.get("event", "APIS")
 
-    builder = ReceiptFormatter()
+    builder = ReceiptFormatter(**settings.FORMATTER_SETTINGS)
     builder.ln()
     builder.center_text(event)
     builder.ln()
@@ -187,11 +188,14 @@ def print_receipt(receipt_printer, payload, bottom_text):
     builder.wrap_center(bottom_text)
 
     print(builder.print())
+    receipt_printer.set(**settings.PRINTER_SETTINGS)
     receipt_printer.text(builder.pop())
 
     reference = payload.get("reference")
+    logger.debug(f"reference: {reference}")
     if reference:
-        receipt_printer.barcode(reference, "CODE39")
+        receipt_printer.text("\n\n")
+        receipt_printer.barcode(reference, "CODE39", align_ct=True)
         receipt_printer.text("\n")
 
     receipt_printer.cut()

@@ -66,6 +66,9 @@ def on_message(client, userdata, msg):
     if msg.topic == get_topic("print_credit"):
         print_receipt(receipt_printer, payload, settings.BOTTOM_TEXT_CREDIT)
 
+    if msg.topic == get_topic("audit_slip"):
+        print_audit_slip(receipt_printer, payload)
+
     # preview badge command chan
     if msg.topic == get_topic("preview"):
         badge_printer = printing.Main(local=True)
@@ -104,6 +107,53 @@ def get_topic(command):
 
 def get_base_topic():
     return f"{settings.MQTT_TOPIC}/{settings.STATION_NAME}"
+
+
+def print_audit_slip(receipt_printer, payload, cashdraw=True):
+    """
+    Example payload:
+        {
+            "v": 1,
+            "event": "Furthemore 2020",
+            "terminal": "Blue",
+            "type": "DROP"
+            "amount": "$60.00",
+            "user": "admin",
+            "timestamp": "1980-10-22T06:00:00.234567"
+        }
+    """
+
+    if cashdraw:
+        receipt_printer.cashdraw(settings.CASH_DRAWER_PIN)
+
+    receipt_printer.image("logo.png")
+
+    event = payload.get("event", "APIS")
+
+    builder = ReceiptFormatter(**settings.FORMATTER_SETTINGS)
+    builder.ln()
+    builder.ln()
+    builder.center_text(event)
+    builder.ln()
+    builder.center_text("Cash Audit Report")
+    builder.ln()
+    builder.hr()
+    builder.ln()
+    builder.format_line_item(f"User: {payload.get('user')}", f"Register: {payload.get('terminal')}")
+    builder.ln()
+    builder.center_text(f"Audit Action: {payload.get('type')}")
+    builder.ln()
+    builder.format_line_item("Amount:", payload.get('amount'))
+    builder.ln()
+    builder.hr()
+    builder.ln()
+    builder.center_text(payload.get('timestamp'))
+
+    print(builder.print())
+    receipt_printer.set(**settings.PRINTER_SETTINGS)
+    receipt_printer.text(builder.pop())
+
+    receipt_printer.cut()
 
 
 def print_receipt(receipt_printer, payload, bottom_text, cashdraw=True):

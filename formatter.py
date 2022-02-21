@@ -32,7 +32,7 @@ class ReceiptFormatter(object):
             left_max_len = self.width - len(right) - self.margin
             left = left[:left_max_len]
 
-        space_len = self.width - len(left) - len(right) - self.margin
+        space_len = self.width - len(left) - len(right) - self.left_margin - 2
         line = f"{' '*self.left_margin}{left}{' '*space_len}  {right}"
         self.lines.append(line)
         return line

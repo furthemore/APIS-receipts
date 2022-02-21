@@ -39,4 +39,14 @@ attempting to resolve the dispute with MidAnthro may result in permanent
 revocation of membership privileges and possible legal action.
 """
 
+FORMATTER_SETTINGS = {
+    "width": 56,
+    "margin": 2,
+    "left_margin": 4
+}
+
+PRINTER_SETTINGS = {
+    "font": "b",
+}
+
 # Printer settings are defined in escpos-config.yaml

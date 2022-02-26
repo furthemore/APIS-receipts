@@ -116,7 +116,7 @@ def no_sale(receipt_printer):
     receipt_printer.cashdraw(settings.CASH_DRAWER_PIN)
 
 
-def print_audit_slip(receipt_printer, payload, cashdraw=True):
+def print_audit_slip(receipt_printer, payload):
     """
     Example payload:
         {
@@ -126,11 +126,12 @@ def print_audit_slip(receipt_printer, payload, cashdraw=True):
             "type": "DROP"
             "amount": "$60.00",
             "user": "admin",
-            "timestamp": "1980-10-22T06:00:00.234567"
+            "timestamp": "1980-10-22T06:00:00.234567",
+            "cashdraw": true
         }
     """
 
-    if cashdraw:
+    if payload.get("cashdraw", True):
         receipt_printer.cashdraw(settings.CASH_DRAWER_PIN)
 
     receipt_printer.image("logo.png")

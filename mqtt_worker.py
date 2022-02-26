@@ -69,6 +69,9 @@ def on_message(client, userdata, msg):
     if msg.topic == get_topic("audit_slip"):
         print_audit_slip(receipt_printer, payload)
 
+    if msg.topic == get_topic("no_sale"):
+        no_sale(receipt_printer)
+
     # preview badge command chan
     if msg.topic == get_topic("preview"):
         badge_printer = printing.Main(local=True)
@@ -107,6 +110,10 @@ def get_topic(command):
 
 def get_base_topic():
     return f"{settings.MQTT_TOPIC}/{settings.STATION_NAME}"
+
+
+def no_sale(receipt_printer):
+    receipt_printer.cashdraw(settings.CASH_DRAWER_PIN)
 
 
 def print_audit_slip(receipt_printer, payload, cashdraw=True):

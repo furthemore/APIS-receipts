@@ -18,9 +18,10 @@ MQTT_TLS_CONTEXT = None
 #}
 
 MQTT_TOPIC = "apis/receipts"
+MQTT_ADMIN_TOPIC = "apis/admin"
 
 # Should match the terminal name in "Firebase" table
-STATION_NAME = "default"
+STATION_NAME = MQTT_LOGIN["username"]
 
 # or 5
 CASH_DRAWER_PIN = 2

@@ -280,7 +280,7 @@ if __name__ == "__main__":
     if settings.MQTT_TLS_ENABLED:
         tls_context = settings.MQTT_TLS_CONTEXT
         logging.debug(f"Enabling TLS with context: {tls_context}")
-        client.tls_set_context(tls_context)
+        client.tls_set(**tls_context)
 
     logging.info("Connecting...")
     client.connect(**settings.MQTT_BROKER)

@@ -96,6 +96,7 @@ def check_shc(barcode_data):
 
     issuer = issuers.lookup_url(shc_dict["payload"]["iss"])
     shc_dict["verification"]["trusted"] = False
+    shc_dict["verification"]["issuer"] = shc_dict["payload"]["iss"]
     if issuer:
         shc_dict["verification"]["trusted"] = True
         shc_dict["verification"]["issuer"] = issuer
@@ -113,6 +114,8 @@ def check_shc(barcode_data):
     print("Trusted: ", "✅" if shc_dict["verification"]["trusted"] else "❌")
     if "issuer" in shc_dict["verification"]:
         print("Issuer: ", shc_dict["verification"]["issuer"])
+    else:
+        print("Untrusted Issuer:", shc_dict["verification"]["issuer"])
 
     return {
         "name": name,

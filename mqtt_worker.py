@@ -214,9 +214,9 @@ def print_receipt(receipt_printer, payload, bottom_text, cashdraw=True):
         if org:
             builder.format_line_item(f"Donation to {org['name']}", org["price"])
 
-        charity = donations.get("charity")
+        charities_list = donations.get("charity")
         logger.debug(f"charity = {charity}")
-        if charity:
+        if charity in charities_list:
             builder.format_line_item(f"Donation to {charity['name']}", charity["price"])
 
     builder.ln()

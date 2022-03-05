@@ -73,6 +73,8 @@ def decode_vaccinations(bundle):
     for e in bundle.entry:
         if type(e.resource) == models.immunization.Immunization:
             decoded = cvx.CVX_CODES.get(int(e.resource.vaccineCode.coding[0].code))
+            if not decoded:
+                decoded = {}
             decoded["lotNumber"] = e.resource.lotNumber
             decoded["status"] = e.resource.status
             decoded["date"] = e.resource.occurrenceDateTime.isostring

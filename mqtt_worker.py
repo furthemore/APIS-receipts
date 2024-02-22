@@ -17,7 +17,7 @@ ch = logging.StreamHandler()
 ch.setLevel(logging.DEBUG)
 
 # create formatter
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 
 # add formatter to ch
 ch.setFormatter(formatter)
@@ -147,15 +147,17 @@ def print_audit_slip(receipt_printer, payload):
     builder.ln()
     builder.hr()
     builder.ln()
-    builder.format_line_item(f"User: {payload.get('user')}", f"Register: {payload.get('terminal')}")
+    builder.format_line_item(
+        f"User: {payload.get('user')}", f"Register: {payload.get('terminal')}"
+    )
     builder.ln()
     builder.center_text(f"Audit Action: {payload.get('type')}")
     builder.ln()
-    builder.format_line_item("Amount:", payload.get('amount'))
+    builder.format_line_item("Amount:", payload.get("amount"))
     builder.ln()
     builder.hr()
     builder.ln()
-    builder.center_text(payload.get('timestamp'))
+    builder.center_text(payload.get("timestamp"))
 
     print(builder.print())
     receipt_printer.set(**settings.PRINTER_SETTINGS)

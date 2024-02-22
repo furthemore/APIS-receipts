@@ -35,7 +35,7 @@ MQTT_TLS_CONTEXT = {
 1. Many Zebra scanners in "Serial Emulation" mode actually just enumerate as IBM-HID (aka IBM SurePOS or Fast-HID) under recent Linux kernels.   For these scanners, set the `USE_HID=1` environment variable (in `.env` for the systemd unit, or passed in).
 2. You will probaly need udev rules that look like this (substitute vendor and product IDs to match your barcode scanner):
 ```
-$ cat /etc/udev/rules.d/10-local.rules 
+$ cat /etc/udev/rules.d/10-local.rules
 SUBSYSTEMS=="usb", ATTRS{idVendor}=="05e0", ATTRS{idProduct}=="0600", GROUP="plugdev", MODE="0777"
 $ sudo udevadm control --reload-rules && sudo udevadm trigger
 ```

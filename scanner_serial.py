@@ -7,17 +7,16 @@ import webbrowser
 import fhirclient.models.bundle as b
 import requests
 import serial
-from fhirclient import models
-from healthcards import parser, cvx
-from paho.mqtt import publish as mqtt
 from aamva import AAMVA
+from fhirclient import models
+from healthcards import cvx, parser
+from paho.mqtt import publish as mqtt
 
 import settings
 
-
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
-eval_bool = lambda x: x.lower() in ('true', '1', 't', 'y', 'yes')
+eval_bool = lambda x: x.lower() in ("true", "1", "t", "y", "yes")
 
 SERIAL_READ_TIMEOUT = 1
 USE_HID = os.environ.get("USE_HID", False)
@@ -182,8 +181,12 @@ if __name__ == "__main__":
     if USE_HID:
         hid_dev = hid.Device(vid, pid)
     else:
-        ser = serial.Serial(os.environ.get("SERIAL_DEVICE", "/dev/ttyACM0"), timeout=SERIAL_READ_TIMEOUT, rtscts=True,
-                            dsrdtr=True)
+        ser = serial.Serial(
+            os.environ.get("SERIAL_DEVICE", "/dev/ttyACM0"),
+            timeout=SERIAL_READ_TIMEOUT,
+            rtscts=True,
+            dsrdtr=True,
+        )
 
     issuers = Issuers()
     aamva = AAMVA()
@@ -215,14 +218,14 @@ if __name__ == "__main__":
                             "first": dl["first"],
                             "last": dl["last"],
                             "middle": dl["middle"],
-                            "dob": dl['dob'].isoformat(),
-                            "expiry": dl['expiry'].isoformat(),
-                            "address": dl['address'],
-                            "address2": dl['address2'],
-                            "city": dl['city'],
-                            "state": dl['state'],
-                            "ZIP": dl['ZIP'],
-                            "country": dl['country'],
+                            "dob": dl["dob"].isoformat(),
+                            "expiry": dl["expiry"].isoformat(),
+                            "address": dl["address"],
+                            "address2": dl["address2"],
+                            "city": dl["city"],
+                            "state": dl["state"],
+                            "ZIP": dl["ZIP"],
+                            "country": dl["country"],
                         }
                         send_mqtt_message(get_topic("scan/id"), payload)
 

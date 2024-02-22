@@ -1,21 +1,36 @@
 {
-    "v": 1,
-    "event": "Furthemore 2020",
-    "line_items": [
-        {"item": "Regular Badge", "price": "$45.00"},
-        {"item": "Con Book", "price": "$0.00"},
-        {"item": "Discount", "price": "-$5.00"}
-    ],
-    "donations" : {
-        "org": {"name": "Furthemore 2020", "price": "$10.00"},
-        "charity": {"name": "ALS Society", "price": "$10.00"}
+  "donations": {
+    "charity": {
+      "name": "ALS Society",
+      "price": "$10.00"
     },
-    "total": "$60.00",
-    "payment": {
-        "type": "Cash",
-        "tendered": "$100.00",
-        "change": "$40.00",
-        "details": "Ref: U4REQT | AID: A0000000031010\nAuth: 025993"
+    "org": {
+      "name": "Furthemore 2020",
+      "price": "$10.00"
+    }
+  },
+  "event": "Furthemore 2020",
+  "line_items": [
+    {
+      "item": "Regular Badge",
+      "price": "$45.00"
     },
-    "reference": "U4REQT"
+    {
+      "item": "Con Book",
+      "price": "$0.00"
+    },
+    {
+      "item": "Discount",
+      "price": "-$5.00"
+    }
+  ],
+  "payment": {
+    "change": "$40.00",
+    "details": "Ref: U4REQT | AID: A0000000031010\nAuth: 025993",
+    "tendered": "$100.00",
+    "type": "Cash"
+  },
+  "reference": "U4REQT",
+  "total": "$60.00",
+  "v": 1
 }

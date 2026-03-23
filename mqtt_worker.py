@@ -4,6 +4,7 @@ from formatter import ReceiptFormatter
 
 import paho.mqtt.client as mqtt
 from escpos.config import Config
+from paho.mqtt.enums import CallbackAPIVersion
 
 import printing
 import settings
@@ -25,91 +26,56 @@ ch.setFormatter(formatter)
 # add ch to logger
 logger.addHandler(ch)
 
-logger.debug(
-    "FIXME: Importing the escpos library clobbers logging here for some reason"
-)
-
 
 # The callback for when the client receives a CONNACK response from the server.
-def on_connect(client, userdata, flags, rc):
-    logging.info(f"Connected with result code {rc}")
+def on_connect(client, userdata, connect_flags, reason_code, properties):
+    logging.info(f"Connected with result code {reason_code}")
 
-    base_topic = get_base_topic()
     # Subscribing in on_connect() means that if we lose the connection and
     # reconnect then subscriptions will be renewed.
-    client.subscribe(f"{base_topic}/#")
+    client.subscribe(get_topic("receipt/#"))
 
 
 # The callback for when a PUBLISH message is received from the server.
 def on_message(client, userdata, msg):
-    logging.debug("Got message:")
-    logging.debug(msg.topic + " " + str(msg.payload))
+    logger.debug("Got message:")
+    logger.debug(msg.topic + " " + str(msg.payload))
 
     receipt_printer = get_printer()
 
-    if msg.topic == get_topic("cash_drawer"):
-        logging.info("Opening cashdrawer...")
+    if msg.topic == get_topic("receipt/cashdrawer"):
+        logger.info("Opening cashdrawer...")
         receipt_printer.cashdraw(settings.CASH_DRAWER_PIN)
+        receipt_printer.close()
+        return
 
     # Commands past here expect a JSON payload:
     try:
         payload = json.loads(msg.payload)
     except json.decoder.JSONDecodeError as e:
-        logging.error(e)
-        logging.error("Unable to decode message payload from server:")
-        logging.error(msg.payload)
+        logger.error(e)
+        logger.error("Unable to decode message payload from server:")
+        logger.error(msg.payload)
+        receipt_printer.close()
         return
 
-    if msg.topic == get_topic("print_cash"):
+    if msg.topic == get_topic("receipt/print/cash"):
         print_receipt(receipt_printer, payload, settings.BOTTOM_TEXT_CASH)
 
-    if msg.topic == get_topic("print_credit"):
+    elif msg.topic == get_topic("receipt/print/card"):
         print_receipt(receipt_printer, payload, settings.BOTTOM_TEXT_CREDIT)
 
-    if msg.topic == get_topic("audit_slip"):
+    elif msg.topic == get_topic("receipt/auditslip"):
         print_audit_slip(receipt_printer, payload)
 
-    if msg.topic == get_topic("no_sale"):
+    elif msg.topic == get_topic("receipt/nosale"):
         no_sale(receipt_printer)
-
-    # preview badge command chan
-    if msg.topic == get_topic("preview"):
-        badge_printer = printing.Main(local=True)
-
-        if settings.THEME == "":
-            settings.THEME == "apis"
-        try:
-            badge_printer.nametags(payload.get("badge"), theme=settings.THEME)
-            badge_printer.preview()
-        except Exception as e:
-            logging.error(e)
-            logging.error("Error on preview")
-            logging.error(msg.payload)
-
-    # print badge command chan
-    if msg.topic == get_topic("print"):
-        badge_printer = printing.Main(local=True)
-
-        if settings.THEME == "":
-            settings.THEME == "apis"
-        try:
-            badge_printer.nametags(payload.get("badges"), theme=settings.THEME)
-            badge_printer.printout()
-        except Exception as e:
-            logging.error(e)
-            logging.error("Error on print")
-            logging.error(msg.payload)
 
     receipt_printer.close()
 
 
-def get_topic(command):
-    base_topic = get_base_topic()
-    return f"{base_topic}/{command}"
-
-
-def get_base_topic():
-    return f"{settings.MQTT_TOPIC}/{settings.STATION_NAME}"
+def get_topic(topic: str) -> str:
+    return f"{settings.MQTT_TOPIC}/{settings.STATION_NAME}/{topic}"
 
 
 def no_sale(receipt_printer):
@@ -268,7 +234,7 @@ def get_printer():
 
 
 if __name__ == "__main__":
-    client = mqtt.Client()
+    client = mqtt.Client(callback_api_version=CallbackAPIVersion.VERSION2)
     client.on_connect = on_connect
     client.on_message = on_message
 
@@ -277,14 +243,14 @@ if __name__ == "__main__":
     try:
         client.username_pw_set(**settings.MQTT_LOGIN)
     except AttributeError:
-        logging.debug("No username/password specified - using anonymous access")
+        logger.debug("No username/password specified - using anonymous access")
 
     if settings.MQTT_TLS_ENABLED:
         tls_context = settings.MQTT_TLS_CONTEXT
-        logging.debug(f"Enabling TLS with context: {tls_context}")
+        logger.debug(f"Enabling TLS with context: {tls_context}")
         client.tls_set(**tls_context)
 
-    logging.info("Connecting...")
+    logger.info("Connecting...")
     client.connect(**settings.MQTT_BROKER)
 
     # Blocking call that processes network traffic, dispatches callbacks and
